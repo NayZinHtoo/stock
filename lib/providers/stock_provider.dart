@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:sale_stocks_pos/database/db.dart';
+import 'package:sale_stocks_pos/controllers/stock_item_controller.dart';
 import 'package:sale_stocks_pos/models/stock.dart';
 
 class StockProvider extends ChangeNotifier {
+  StockItemListController controller = StockItemListController();
   List<StockItem> stockItemList = [];
 
   getStockItem() async {
     stockItemList.clear();
-    stockItemList.addAll(await StockDB.db.retrieveStockItem());
+    stockItemList.addAll(await controller.retrieveStockItem());
+    notifyListeners();
+    return stockItemList;
+  }
+
+  addStockItem(StockItem stockItem) async {
+    stockItemList.add(stockItem);
     notifyListeners();
     return stockItemList;
   }
@@ -15,7 +22,7 @@ class StockProvider extends ChangeNotifier {
   getStockItemByCategory(String category) async {
     stockItemList.clear();
     stockItemList
-        .addAll(await StockDB.db.retrieveStockItemByCategory(category));
+        .addAll(await controller.retrieveStockItemByCategory(category));
     notifyListeners();
     return stockItemList;
   }
@@ -25,14 +32,8 @@ class StockProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addStockItem(StockItem stockItem) {
-    StockDB.db.insertStockItem(stockItem);
-    stockItemList.add(stockItem);
-    notifyListeners();
-  }
-
   removeStockItem(StockItem stockItem) {
-    StockDB.db.deleteStockItem(stockItem.id!);
+    controller.deleteStockItem(stockItem.id!);
     stockItemList.remove(stockItem);
     notifyListeners();
   }

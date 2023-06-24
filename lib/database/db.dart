@@ -5,8 +5,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
 
-import '../models/stock.dart';
-
 class StockDB with ChangeNotifier {
   static Database? _database;
   static final StockDB db = StockDB._();
@@ -39,48 +37,5 @@ class StockDB with ChangeNotifier {
         'category TEXT NOT NULL,'
         'image TEXT NOT NULL'
         ')');
-  }
-
-  // insert data
-  // Future<int> insertStockItem(List<StockItem> stockItems) async {
-  //   int result = 0;
-  //   final Database db = await database;
-  //   for (var stockItem in stockItems) {
-  //     result = await db.insert('stock_item', stockItem.toMap(),
-  //         conflictAlgorithm: ConflictAlgorithm.replace);
-  //   }
-  //   return result;
-  // }
-
-  // insert data
-  Future<int> insertStockItem(StockItem stockItem) async {
-    final db = await database;
-    final result = await db.insert('stock_item', stockItem.toMap());
-    return result;
-  }
-
-  // retrieve data
-  Future<List<StockItem>> retrieveStockItem() async {
-    final Database db = await database;
-    final List<Map<String, Object?>> queryResult = await db.query('stock_item');
-    return queryResult.map((e) => StockItem.fromMap(e)).toList();
-  }
-
-  // retrieve data by category
-  Future<List<StockItem>> retrieveStockItemByCategory(String ctegory) async {
-    final Database db = await database;
-    final List<Map<String, Object?>> queryResult = await db
-        .query('stock_item', where: 'category = ? ', whereArgs: [ctegory]);
-    return queryResult.map((e) => StockItem.fromMap(e)).toList();
-  }
-
-  // delete data
-  Future<void> deleteStockItem(int id) async {
-    final db = await database;
-    await db.delete(
-      'stock_item',
-      where: "id = ?",
-      whereArgs: [id],
-    );
   }
 }

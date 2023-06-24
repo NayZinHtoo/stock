@@ -40,6 +40,7 @@ dependencies:
   sqflite: ^2.2.8+4
   image_picker: ^0.8.5+3
   path: ^1.8.0
+  chips_choice: ^3.0.0
 
 dev_dependencies:
   flutter_test:
