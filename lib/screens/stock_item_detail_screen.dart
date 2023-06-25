@@ -26,27 +26,21 @@ class StockIemDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Center(
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
             color: Colors.grey.withOpacity(0.5),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color(0xFFF5F5F5).withAlpha(100),
-                  ),
-                  child: Center(
-                    child: Image.memory(
-                      Uint8List.fromList(
-                          base64.decode(stockItem.image.toString())),
-                      height: 150,
-                      width: 150,
-                      fit: BoxFit.cover,
-                    ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.memory(
+                    Uint8List.fromList(
+                        base64.decode(stockItem.image.toString())),
+                    height: 250,
+                    width: double.maxFinite,
+                    fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(

@@ -9,6 +9,8 @@ import 'package:sale_stocks_pos/screens/stock_item_add_screen.dart';
 import 'package:sale_stocks_pos/screens/stock_item_detail_screen.dart';
 import 'package:sale_stocks_pos/utils/constant.dart';
 
+import '../models/stock.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -21,15 +23,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controller = TextEditingController();
 
-  String? tags;
+  String? selectedCategory;
   final List<String> categories = [
     'All',
     'Food',
     'Drink',
   ];
+  List<StockItem> filterStockItemList = [];
 
   _MyHomePageState() {
-    tags = categories.first;
+    selectedCategory = categories.first;
   }
 
   late StockProvider stockProvider;
@@ -38,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     stockProvider = Provider.of<StockProvider>(context, listen: false);
     stockProvider.getStockItem();
-
     super.initState();
   }
 
@@ -53,9 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Container(
             margin: const EdgeInsets.all(8.0),
-            // decoration: BoxDecoration(
-            //     border: Border.all(color: Theme.of(context).primaryColor),
-            //     borderRadius: BorderRadius.circular(20)),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: TextFormField(
                       controller: controller,
                       textCapitalization: TextCapitalization.words,
-                      onChanged: (value) => (),
+                      onChanged: (value) {
+                        stockProvider.filterSearchResults(value);
+                      },
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -88,14 +89,14 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 ChipsChoice<String>.single(
                   padding: const EdgeInsets.all(4),
-                  value: tags,
+                  value: selectedCategory,
                   onChanged: (value) {
                     if (value == "All") {
                       stockProvider.getStockItem();
                     } else {
                       stockProvider.getStockItemByCategory(value);
                     }
-                    setState(() => tags = value);
+                    setState(() => selectedCategory = value);
                   },
                   choiceStyle: C2ChipStyle.outlined(
                     foregroundStyle: const TextStyle(
@@ -172,102 +173,162 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ]),
           ),
-          Consumer<StockProvider>(
-            builder: (context, provider, _) {
-              if (provider.stockItemList.isNotEmpty) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListView.builder(
-                      itemCount: provider.stockItemList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StockIemDetailScreen(
-                                    stockItem:
-                                        provider.stockItemList.toList()[index]),
-                              ),
-                            );
-                          },
-                          child: Dismissible(
-                            key: UniqueKey(),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (direction) {
-                              provider.removeStockItem(
-                                  provider.stockItemList.toList()[index]);
-                            },
-                            background: Container(
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20.0),
-                              color: Colors.red,
-                              child:
-                                  const Icon(Icons.delete, color: Colors.white),
-                            ),
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Row(children: [
-                                  Image.memory(
-                                    Uint8List.fromList(base64.decode(provider
-                                        .stockItemList[index].image
-                                        .toString())),
-                                    height: 100,
-                                    width: 100,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                  color: const Color(0xFFF2FDFF),
+                  borderRadius: BorderRadius.circular(16)),
+              height: double.maxFinite,
+              width: double.maxFinite,
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Swipe left to delete item',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  Consumer<StockProvider>(
+                    builder: (context, provider, _) {
+                      if (provider.stockItemList.isNotEmpty) {
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                              itemCount: provider.stockItemList.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            StockIemDetailScreen(
+                                                stockItem: provider
+                                                    .stockItemList
+                                                    .toList()[index]),
+                                      ),
+                                    );
+                                  },
+                                  child: Dismissible(
+                                    key: UniqueKey(),
+                                    direction: DismissDirection.endToStart,
+                                    onDismissed: (direction) {
+                                      provider.removeStockItem(provider
+                                          .stockItemList
+                                          .toList()[index]);
+                                    },
+                                    background: Container(
+                                      decoration: ShapeDecoration(
+                                        color: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16)),
+                                      ),
+                                      alignment: Alignment.centerRight,
+                                      padding:
+                                          const EdgeInsets.only(right: 20.0),
+                                      child: const Column(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                            MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          Text(provider
-                                              .stockItemList[index].name
-                                              .toString()),
+                                          Icon(Icons.delete_sweep,
+                                              color: Colors.white),
                                           Text(
-                                            '${provider.stockItemList[index].description}Next, create a detail screen that extracts and displays the title and description from the Todo. To access the Todo, use the ModalRoute.of() method. This method returns the current route with the arguments.',
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 3,
+                                            'Delete',
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  )
-                                ]),
-                              ),
-                              // child: ListTile(
-                              //   contentPadding: const EdgeInsets.all(8.0),
-                              //   leading: Image.memory(
-                              //     Uint8List.fromList(base64.decode(provider
-                              //         .stockItemList[index].image
-                              //         .toString())),
-                              //     height: 50,
-                              //     width: 50,
-                              //     fit: BoxFit.fill,
-                              //   ),
-                              //   title: Text(provider.stockItemList[index].name
-                              //       .toString()),
-                              //   subtitle: Text(provider
-                              //       .stockItemList[index].description
-                              //       .toString()),
-                              // ),
+                                    child: Card(
+                                      elevation: 8,
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Row(children: [
+                                          Image.memory(
+                                            Uint8List.fromList(base64.decode(
+                                                provider
+                                                    .stockItemList[index].image
+                                                    .toString())),
+                                            height: 100,
+                                            width: 100,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(provider
+                                                      .stockItemList[index].name
+                                                      .toString()),
+                                                  Text(
+                                                    '${provider.stockItemList[index].description}',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 3,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ]),
+                                      ),
+                                      // child: ListTile(
+                                      //   contentPadding: const EdgeInsets.all(8.0),
+                                      //   leading: Image.memory(
+                                      //     Uint8List.fromList(base64.decode(provider
+                                      //         .stockItemList[index].image
+                                      //         .toString())),
+                                      //     height: 50,
+                                      //     width: 50,
+                                      //     fit: BoxFit.fill,
+                                      //   ),
+                                      //   title: Text(provider.stockItemList[index].name
+                                      //       .toString()),
+                                      //   subtitle: Text(provider
+                                      //       .stockItemList[index].description
+                                      //       .toString()),
+                                      // ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         );
-                      },
-                    ),
+                      } else {
+                        //return const Center(child: CircularProgressIndicator());
+                        return const Expanded(
+                            child: Center(
+                                child: Text(
+                          'No Data',
+                          style: TextStyle(
+                            fontSize: 30,
+                          ),
+                        )));
+                      }
+                    },
                   ),
-                );
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            },
+                ],
+              ),
+            ),
           ),
         ],
       ),

@@ -30,6 +30,10 @@ class MyApp extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(width: 0, color: Colors.white),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(width: 0, color: Colors.white),
+              ),
               filled: true,
               fillColor: lightColorScheme.surfaceVariant,
               border: InputBorder.none,

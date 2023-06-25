@@ -37,4 +37,11 @@ class StockProvider extends ChangeNotifier {
     stockItemList.remove(stockItem);
     notifyListeners();
   }
+
+  void filterSearchResults(String query) {
+    stockItemList = stockItemList
+        .where((item) => item.name!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    notifyListeners();
+  }
 }
