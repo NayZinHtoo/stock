@@ -9,8 +9,6 @@ import 'package:sale_stocks_pos/screens/stock_item_add_screen.dart';
 import 'package:sale_stocks_pos/screens/stock_item_detail_screen.dart';
 import 'package:sale_stocks_pos/utils/constant.dart';
 
-import '../models/stock.dart';
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -21,7 +19,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController controller = TextEditingController();
+  late StockProvider stockProvider;
+  final TextEditingController _controller = TextEditingController();
 
   String? selectedCategory;
   final List<String> categories = [
@@ -29,19 +28,22 @@ class _MyHomePageState extends State<MyHomePage> {
     'Food',
     'Drink',
   ];
-  List<StockItem> filterStockItemList = [];
 
   _MyHomePageState() {
     selectedCategory = categories.first;
   }
-
-  late StockProvider stockProvider;
 
   @override
   void initState() {
     stockProvider = Provider.of<StockProvider>(context, listen: false);
     stockProvider.getStockItem();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Flexible(
                     flex: 1,
                     child: TextFormField(
-                      controller: controller,
+                      controller: _controller,
                       textCapitalization: TextCapitalization.words,
                       onChanged: (value) {
                         stockProvider.filterSearchResults(value);
@@ -198,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ListView.builder(
+                              //physics: NeverScrollableScrollPhysics(),
                               itemCount: provider.stockItemList.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return InkWell(

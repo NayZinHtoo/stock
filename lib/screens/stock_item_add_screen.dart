@@ -18,8 +18,8 @@ class AddStockItemScreen extends StatefulWidget {
 }
 
 class _AddStockItemScreenState extends State<AddStockItemScreen> {
-  final stockNamecontroller = TextEditingController();
-  final stockDesccontroller = TextEditingController();
+  final _stockNamecontroller = TextEditingController();
+  final _stockDesccontroller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   String category = 'All';
@@ -60,8 +60,8 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
 
   @override
   void dispose() {
-    stockNamecontroller.dispose();
-    stockDesccontroller.dispose();
+    _stockNamecontroller.dispose();
+    _stockDesccontroller.dispose();
     super.dispose();
   }
 
@@ -91,13 +91,13 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
               children: [
                 const Text("Stock name"),
                 TextFormField(
-                  controller: stockNamecontroller,
+                  controller: _stockNamecontroller,
                   decoration: const InputDecoration(
                     hintText: 'Enter stock name',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter stock name';
+                      return '*Please enter stock name';
                     }
                     return null;
                   },
@@ -105,10 +105,10 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                 const SizedBox(height: 18),
                 const Text("Stock description"),
                 TextFormField(
-                  controller: stockDesccontroller,
+                  controller: _stockDesccontroller,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter stock description';
+                      return '*Please enter stock description';
                     }
                     return null;
                   },
@@ -175,7 +175,7 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                                 height: 250,
                                 fit: BoxFit.cover),
                           )
-                        : const Text('Please select an image'),
+                        : const Text('*Please select an image'),
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -205,8 +205,8 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                     if (_formKey.currentState!.validate()) {
                       var stockItem = StockItem(
                           id: stockProvider.stockItemList.length + 1,
-                          name: stockNamecontroller.text,
-                          description: stockDesccontroller.text,
+                          name: _stockNamecontroller.text,
+                          description: _stockDesccontroller.text,
                           category: category,
                           image: imageString);
                       stockAddProvider.addStockItem(stockItem);

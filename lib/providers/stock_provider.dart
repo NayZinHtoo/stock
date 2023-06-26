@@ -38,7 +38,8 @@ class StockProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void filterSearchResults(String query) {
+  void filterSearchResults(String query) async {
+    stockItemList = await getStockItem();
     stockItemList = stockItemList
         .where((item) => item.name!.toLowerCase().contains(query.toLowerCase()))
         .toList();

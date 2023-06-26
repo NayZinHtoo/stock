@@ -22,7 +22,7 @@ class StockIemDetailScreen extends StatelessWidget {
         ),
         title: const Text('Sale Stocks Pos'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Center(
           child: Container(
