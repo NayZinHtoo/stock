@@ -22,56 +22,59 @@ class StockIemDetailScreen extends StatelessWidget {
         ),
         title: const Text('Sale Stocks Pos'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-            color: Colors.grey.withOpacity(0.5),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.memory(
-                    Uint8List.fromList(
-                        base64.decode(stockItem.image.toString())),
-                    height: 250,
-                    width: double.maxFinite,
-                    fit: BoxFit.cover,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+              color: Colors.grey.withOpacity(0.5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Image.memory(
+                      Uint8List.fromList(
+                          base64.decode(stockItem.image.toString())),
+                      height: 250,
+                      width: double.maxFinite,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
-                Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                  decoration: BoxDecoration(
-                      color: const Color(0xFFF2FDFF),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        stockItem.name.toString(),
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      Text(
-                        stockItem.description.toString(),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
+                  const SizedBox(
+                    height: 24,
                   ),
-                )
-              ],
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 24, horizontal: 16),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFFF2FDFF),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          stockItem.name.toString(),
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(
+                          height: 24,
+                        ),
+                        Text(
+                          stockItem.description.toString(),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
