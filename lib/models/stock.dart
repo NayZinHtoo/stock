@@ -4,6 +4,7 @@ class StockItem {
   String? description;
   String? category;
   String? image;
+  int? status = 0;
 
   StockItem({
     this.id,
@@ -11,6 +12,7 @@ class StockItem {
     this.description,
     this.category,
     this.image,
+    this.status,
   });
 
   StockItem.fromMap(Map<String, dynamic> result)
@@ -18,7 +20,8 @@ class StockItem {
         name = result["name"],
         description = result["description"],
         category = result["category"],
-        image = result["image"];
+        image = result["image"],
+        status = result["status"];
 
   Map<String, Object> toMap() {
     return {
@@ -26,7 +29,8 @@ class StockItem {
       'name': name!,
       'description': description!,
       'category': category!,
-      'image': image!
+      'image': image!,
+      'status': status!,
     };
   }
 }

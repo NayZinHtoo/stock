@@ -68,7 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       controller: _controller,
                       textCapitalization: TextCapitalization.words,
                       onChanged: (value) {
-                        stockProvider.filterSearchResults(value);
+                        stockProvider.filterSearchResults(
+                            value, selectedCategory!);
                       },
                       decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -167,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.all(8.0),
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               Text(
-                'Stoks Items',
+                'Stocks Items',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -210,9 +211,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             StockIemDetailScreen(
-                                                stockItem: provider
+                                                stockItemId: provider
                                                     .stockItemList
-                                                    .toList()[index]),
+                                                    .toList()[index]
+                                                    .id),
                                       ),
                                     );
                                   },
@@ -278,9 +280,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(provider
-                                                      .stockItemList[index].name
-                                                      .toString()),
+                                                  Text(
+                                                      '${provider.stockItemList[index].id}'),
+                                                  Text(
+                                                      '${provider.stockItemList[index].name}'),
                                                   Text(
                                                     '${provider.stockItemList[index].description}',
                                                     overflow:

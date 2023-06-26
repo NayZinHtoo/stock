@@ -20,8 +20,12 @@ class StockDB with ChangeNotifier {
   _initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     final path = p.join(documentsDirectory.path, 'pos.db');
-    var db = await openDatabase(path,
-        version: 1, onCreate: _createTable, onUpgrade: _updateTable);
+    var db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: _createTable,
+      onUpgrade: _updateTable,
+    );
     return db;
   }
 
@@ -31,11 +35,12 @@ class StockDB with ChangeNotifier {
 
   Future _createTable(Database db, int version) async {
     await db.execute('CREATE TABLE IF NOT EXISTS stock_item('
-        'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+        'id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'
         'name TEXT NOT NULL,'
         'description TEXT NOT NULL,'
         'category TEXT NOT NULL,'
-        'image TEXT NOT NULL'
+        'image TEXT NOT NULL,'
+        'status INTEGER DEFAULT 0'
         ')');
   }
 }

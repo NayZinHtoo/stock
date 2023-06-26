@@ -11,7 +11,8 @@ import 'package:sale_stocks_pos/providers/stock_provider.dart';
 import '../providers/stock_add_provider.dart';
 
 class AddStockItemScreen extends StatefulWidget {
-  const AddStockItemScreen({super.key});
+  final StockItem? stockItem;
+  const AddStockItemScreen({super.key, this.stockItem});
 
   @override
   State<AddStockItemScreen> createState() => _AddStockItemScreenState();
@@ -22,10 +23,9 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
   final _stockDesccontroller = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  String category = 'All';
-
+  String btnString = 'Save';
+  String? category = 'Food';
   var categories = [
-    'All',
     'Food',
     'Drink',
   ];
@@ -59,7 +59,21 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
   }
 
   @override
+  void initState() {
+    final name = widget.stockItem != null ? widget.stockItem?.name : '';
+    final desc = widget.stockItem != null ? widget.stockItem?.description : '';
+
+    btnString = widget.stockItem != null ? 'Update' : 'Save';
+    _stockNamecontroller.text = name!;
+    _stockDesccontroller.text = desc!;
+    category = widget.stockItem != null ? widget.stockItem?.category : 'Food';
+    imageString = widget.stockItem != null ? widget.stockItem?.image : '';
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    widget.stockItem?.description;
     _stockNamecontroller.dispose();
     _stockDesccontroller.dispose();
     super.dispose();
@@ -70,6 +84,7 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
     final stockProvider = Provider.of<StockProvider>(context, listen: false);
     final stockAddProvider =
         Provider.of<StockAddProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -168,12 +183,19 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                 Center(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: image != null
+                    child: imageString!.isNotEmpty
                         ? Center(
-                            child: Image.file(image!,
-                                width: double.maxFinite,
-                                height: 250,
-                                fit: BoxFit.cover),
+                            child: Image.memory(
+                              Uint8List.fromList(
+                                  base64.decode(imageString.toString())),
+                              height: 250,
+                              width: double.maxFinite,
+                              fit: BoxFit.cover,
+                            ),
+                            // Image.file(image!,
+                            //     width: double.maxFinite,
+                            //     height: 250,
+                            //     fit: BoxFit.cover),
                           )
                         : const Text('*Please select an image'),
                   ),
@@ -186,31 +208,53 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Save',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                        btnString,
+                        style: const TextStyle(color: Colors.white),
+                      )
                     ],
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (imageString == null || imageString == "") {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Choose Image')),
                       );
                     }
                     if (_formKey.currentState!.validate()) {
-                      var stockItem = StockItem(
-                          id: stockProvider.stockItemList.length + 1,
+                      if (btnString == 'Save') {
+                        final int id = await stockProvider.getStockItemCount();
+                        var stockItem = StockItem(
+                          id: id + 1,
                           name: _stockNamecontroller.text,
                           description: _stockDesccontroller.text,
                           category: category,
-                          image: imageString);
-                      stockAddProvider.addStockItem(stockItem);
-                      stockProvider.addStockItem(stockItem);
+                          image: imageString,
+                          status: 0,
+                        );
+                        stockAddProvider.addStockItem(stockItem);
+                        stockProvider.addStockItem(stockItem);
+                      } else {
+                        var stockItem = StockItem(
+                          id: widget.stockItem?.id,
+                          name: _stockNamecontroller.text,
+                          description: _stockDesccontroller.text,
+                          category: category,
+                          image: imageString,
+                          status: 0,
+                        );
+                        stockProvider.updateStockItem(stockItem);
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) =>
+                        //         StockIemDetailScreen(stockItem: stockItem),
+                        //   ),
+                        // );
+                      }
                       Navigator.pop(context);
                     }
                   },

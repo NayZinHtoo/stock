@@ -5,6 +5,13 @@ import 'package:sale_stocks_pos/models/stock.dart';
 class StockProvider extends ChangeNotifier {
   StockItemListController controller = StockItemListController();
   List<StockItem> stockItemList = [];
+  int count = 0;
+
+  Future<int> getStockItemCount() async {
+    count = await controller.retrieveStockItemCount();
+    notifyListeners();
+    return count;
+  }
 
   getStockItem() async {
     stockItemList.clear();
@@ -15,6 +22,14 @@ class StockProvider extends ChangeNotifier {
 
   addStockItem(StockItem stockItem) async {
     stockItemList.add(stockItem);
+    notifyListeners();
+    return stockItemList;
+  }
+
+  updateStockItem(StockItem stockItem) async {
+    controller.updateStockItem(stockItem);
+    stockItemList[stockItemList
+        .indexWhere((element) => element.id == stockItem.id)] = stockItem;
     notifyListeners();
     return stockItemList;
   }
@@ -33,15 +48,18 @@ class StockProvider extends ChangeNotifier {
   }
 
   removeStockItem(StockItem stockItem) {
-    controller.deleteStockItem(stockItem.id!);
+    //controller.deleteStockItem(stockItem.id!);
+    controller.updateStockItemStatus(stockItem.id!);
     stockItemList.remove(stockItem);
     notifyListeners();
   }
 
-  void filterSearchResults(String query) async {
-    stockItemList = await getStockItem();
+  void filterSearchResults(String name, String category) async {
+    stockItemList = category == 'All'
+        ? await getStockItem()
+        : await getStockItemByCategory(category);
     stockItemList = stockItemList
-        .where((item) => item.name!.toLowerCase().contains(query.toLowerCase()))
+        .where((item) => item.name!.toLowerCase().contains(name.toLowerCase()))
         .toList();
     notifyListeners();
   }
