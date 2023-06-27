@@ -262,9 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         child: Row(children: [
                                           Image.memory(
                                             Uint8List.fromList(base64.decode(
-                                                provider
-                                                    .stockItemList[index].image
-                                                    .toString())),
+                                                '${provider.stockItemList[index].image}')),
                                             height: 100,
                                             width: 100,
                                             fit: BoxFit.fill,

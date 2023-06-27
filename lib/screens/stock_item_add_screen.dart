@@ -37,7 +37,6 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
-      //print('Image File Path ########### ${imageTemp.toString()}');
       imagetoByteSting(imageTemp);
       setState(() {
         this.image = imageTemp;
@@ -55,6 +54,43 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
       setState(() => imageString = base64string);
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
+    }
+  }
+
+  Future saveStockItem(BuildContext context) async {
+    final stockProvider = Provider.of<StockProvider>(context, listen: false);
+    final stockAddProvider =
+        Provider.of<StockAddProvider>(context, listen: false);
+    if (imageString == null || imageString == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Choose Image')),
+      );
+    }
+    if (_formKey.currentState!.validate()) {
+      if (btnString == 'Save') {
+        final int id = await stockProvider.getStockItemCount();
+        var stockItem = StockItem(
+          id: id + 1,
+          name: _stockNamecontroller.text,
+          description: _stockDesccontroller.text,
+          category: category,
+          image: imageString,
+          status: 0,
+        );
+        stockAddProvider.addStockItem(stockItem);
+        stockProvider.addStockItem(stockItem);
+      } else {
+        var stockItem = StockItem(
+          id: widget.stockItem?.id,
+          name: _stockNamecontroller.text,
+          description: _stockDesccontroller.text,
+          category: category,
+          image: imageString,
+          status: 0,
+        );
+        stockProvider.updateStockItem(stockItem);
+      }
+      if (context.mounted) Navigator.pop(context);
     }
   }
 
@@ -81,10 +117,6 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final stockProvider = Provider.of<StockProvider>(context, listen: false);
-    final stockAddProvider =
-        Provider.of<StockAddProvider>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -186,16 +218,11 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                     child: imageString!.isNotEmpty
                         ? Center(
                             child: Image.memory(
-                              Uint8List.fromList(
-                                  base64.decode(imageString.toString())),
+                              Uint8List.fromList(base64.decode('$imageString')),
                               height: 250,
                               width: double.maxFinite,
                               fit: BoxFit.cover,
                             ),
-                            // Image.file(image!,
-                            //     width: double.maxFinite,
-                            //     height: 250,
-                            //     fit: BoxFit.cover),
                           )
                         : const Text('*Please select an image'),
                   ),
@@ -218,45 +245,8 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
                       )
                     ],
                   ),
-                  onPressed: () async {
-                    if (imageString == null || imageString == "") {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Choose Image')),
-                      );
-                    }
-                    if (_formKey.currentState!.validate()) {
-                      if (btnString == 'Save') {
-                        final int id = await stockProvider.getStockItemCount();
-                        var stockItem = StockItem(
-                          id: id + 1,
-                          name: _stockNamecontroller.text,
-                          description: _stockDesccontroller.text,
-                          category: category,
-                          image: imageString,
-                          status: 0,
-                        );
-                        stockAddProvider.addStockItem(stockItem);
-                        stockProvider.addStockItem(stockItem);
-                      } else {
-                        var stockItem = StockItem(
-                          id: widget.stockItem?.id,
-                          name: _stockNamecontroller.text,
-                          description: _stockDesccontroller.text,
-                          category: category,
-                          image: imageString,
-                          status: 0,
-                        );
-                        stockProvider.updateStockItem(stockItem);
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) =>
-                        //         StockIemDetailScreen(stockItem: stockItem),
-                        //   ),
-                        // );
-                      }
-                      Navigator.pop(context);
-                    }
+                  onPressed: () {
+                    saveStockItem(context);
                   },
                 ),
               ],

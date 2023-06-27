@@ -67,7 +67,7 @@ class _StockIemDetailScreenState extends State<StockIemDetailScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                       child: Image.memory(
                         Uint8List.fromList(
-                            base64.decode(stockItem!.image.toString())),
+                            base64.decode('${stockItem!.image}')),
                         height: 250,
                         width: double.maxFinite,
                         fit: BoxFit.cover,
@@ -88,14 +88,14 @@ class _StockIemDetailScreenState extends State<StockIemDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            stockItem!.name.toString(),
+                            '${stockItem!.name}',
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           const SizedBox(
                             height: 24,
                           ),
                           Text(
-                            stockItem!.description.toString(),
+                            '${stockItem!.description}',
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
