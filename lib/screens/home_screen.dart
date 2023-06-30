@@ -260,13 +260,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(16),
                                         child: Row(children: [
-                                          Image.memory(
-                                            Uint8List.fromList(base64.decode(
-                                                '${provider.stockItemList[index].image}')),
-                                            height: 100,
-                                            width: 100,
-                                            fit: BoxFit.fill,
-                                          ),
+                                          provider.stockItemList[index].image!
+                                                  .isEmpty
+                                              ? Image.asset(
+                                                  'assets/download.jpg')
+                                              : Image.memory(
+                                                  Uint8List.fromList(base64.decode(
+                                                      '${provider.stockItemList[index].image}')),
+                                                  height: 100,
+                                                  width: 100,
+                                                  fit: BoxFit.fill,
+                                                ),
                                           Expanded(
                                             child: Padding(
                                               padding:

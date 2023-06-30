@@ -65,6 +65,7 @@ class _AddStockItemScreenState extends State<AddStockItemScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Choose Image')),
       );
+      return;
     }
     if (_formKey.currentState!.validate()) {
       if (btnString == 'Save') {
